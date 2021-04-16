@@ -341,7 +341,7 @@ interface IAppleSwapFactory {
     event PairCreated(address indexed pair, address stock, address money, bool isOnlySwap);
 
     function createPair(address stock, address money, bool isOnlySwap) external returns (address pair);
-    function setFeeToAddresses(address _feeTo_1, address _feeTo_2, address _feeToPrivate) external;
+    function setFeeToAddresses(address _feeTo_1, address _feeToPrivate) external;
     function setFeeToSetter(address) external;
     function setFeeBPS(uint32 bps) external;
     function setPairLogic(address implLogic) external;
@@ -709,9 +709,8 @@ abstract contract AppleSwapPool is AppleSwapERC20, IAppleSwapPool {
     // Give feeToAddresses some liquidity tokens if K got increased since last liquidity-changing
     function _mintFee(uint112 _reserve0, uint112 _reserve1, uint[5] memory proxyData) private returns (bool feeOn) {
         address feeTo_1 = IAppleSwapFactory(ProxyData.factory(proxyData)).feeTo_1();
-        address feeTo_2 = IAppleSwapFactory(ProxyData.factory(proxyData)).feeTo_2();
         address feeToPrivate = IAppleSwapFactory(ProxyData.factory(proxyData)).feeToPrivate();
-        feeOn = (feeTo_1 != address(0) && feeTo_2 != address(0) && feeToPrivate != address(0));
+        feeOn = (feeTo_1 != address(0) && feeToPrivate != address(0));
         uint kLast = _kLast;
         // gas savings to use cached kLast
         if (feeOn) {
@@ -720,25 +719,22 @@ abstract contract AppleSwapPool is AppleSwapERC20, IAppleSwapPool {
                 uint rootKLast = Math.sqrt(kLast);
                 if (rootK > rootKLast) {
                     uint numerator = totalSupply.mul(rootK.sub(rootKLast));
-                    uint denominator = rootK.add(rootKLast);
+                    uint denominator = rootKLast;
                     uint liquidity = numerator / denominator;
                     if (liquidity > 0) {
                         uint liquidity_p1 = liquidity.div(4); // 25%  
-                        uint liquidity_p2 = liquidity.mul(7).div(20); // 35%
-                        uint liquidity_p3 = liquidity.mul(2).div(5); // 40%
+                        uint liquidity_p2 = liquidity.mul(3).div(4); // 75%
                         if (liquidity_p1 > 0) {
                             _mint(feeToPrivate, liquidity_p1);
                         }
                         if (liquidity_p2 > 0) {
                             _mint(feeTo_1, liquidity_p2);
                         }
-                        if (liquidity_p3 > 0) {
-                            _mint(feeTo_2, liquidity_p3);
-                        }
+ 
                     }
                 }
             }
-        } else if (kLast != 0) {
+        }else if (kLast != 0) {
             _kLast = 0;
         }
     }
@@ -1808,10 +1804,9 @@ contract AppleSwapFactory is IAppleSwapFactory {
         return allPairs.length;
     }
 
-    function setFeeToAddresses(address _feeTo_1, address _feeTo_2, address _feeToPrivate) external override {
+    function setFeeToAddresses(address _feeTo_1, address _feeToPrivate) external override {
         require(msg.sender == feeToSetter, "AppleSwapFactory: FORBIDDEN");
         feeTo_1 = _feeTo_1;
-        feeTo_2 = _feeTo_2;
         feeToPrivate = _feeToPrivate;
     }
 

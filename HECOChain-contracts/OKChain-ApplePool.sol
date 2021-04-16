@@ -485,6 +485,7 @@ contract AppleRewardPool is Ownable {
     function setApplePertime(uint256 _pid, uint256 _ApplePertime) public onlyOwner validatePool(_pid){
         PoolInfo storage pool = poolinfo[_pid];
         updatePool(_pid);
+        _ApplePertime = _ApplePertime.mul(1e18).div(86400);
         pool.ApplePertime = _ApplePertime;
     }
     //添加pool池
@@ -492,6 +493,7 @@ contract AppleRewardPool is Ownable {
         if (_withUpdate) {
             massUpdatePools();
         }
+        _ApplePertime = _ApplePertime.mul(1e18).div(86400);
         uint256 lastRewardtime = block.timestamp > _starttime ? block.timestamp : _starttime;
         poolinfo.push(PoolInfo({
             token: _token,

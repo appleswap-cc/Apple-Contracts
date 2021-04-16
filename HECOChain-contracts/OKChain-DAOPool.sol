@@ -487,6 +487,7 @@ contract AppleDAOPool is Ownable {
     function settokenPertime(uint256 _pid, uint256 _tokenPertime) public onlyOwner validatePool(_pid){
         PoolInfo storage pool = poolinfo[_pid];
         updatePool(_pid);
+        _tokenPertime = _tokenPertime.mul(1e18).div(86400);
         pool.tokenPertime = _tokenPertime;
     }
     //添加pool池
@@ -495,6 +496,7 @@ contract AppleDAOPool is Ownable {
         if (_withUpdate) {
             massUpdatePools();
         }
+        _tokenPertime = _tokenPertime.mul(1e18).div(86400);
         uint256 lastRewardtime = block.timestamp > _starttime ? block.timestamp : _starttime;
         poolinfo.push(PoolInfo({
             token: _token,

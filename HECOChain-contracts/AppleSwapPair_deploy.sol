@@ -704,9 +704,8 @@ abstract contract AppleSwapPool is AppleSwapERC20, IAppleSwapPool {
     // Give feeToAddresses some liquidity tokens if K got increased since last liquidity-changing
     function _mintFee(uint112 _reserve0, uint112 _reserve1, uint[5] memory proxyData) private returns (bool feeOn) {
         address feeTo_1 = IAppleSwapFactory(ProxyData.factory(proxyData)).feeTo_1();
-        address feeTo_2 = IAppleSwapFactory(ProxyData.factory(proxyData)).feeTo_2();
         address feeToPrivate = IAppleSwapFactory(ProxyData.factory(proxyData)).feeToPrivate();
-        feeOn = (feeTo_1 != address(0) && feeTo_2 != address(0) && feeToPrivate != address(0));
+        feeOn = (feeTo_1 != address(0) && feeToPrivate != address(0));
         uint kLast = _kLast;
         // gas savings to use cached kLast
         if (feeOn) {
@@ -715,21 +714,18 @@ abstract contract AppleSwapPool is AppleSwapERC20, IAppleSwapPool {
                 uint rootKLast = Math.sqrt(kLast);
                 if (rootK > rootKLast) {
                     uint numerator = totalSupply.mul(rootK.sub(rootKLast));
-                    uint denominator = rootK.add(rootKLast);
+                    uint denominator = rootKLast;
                     uint liquidity = numerator / denominator;
                     if (liquidity > 0) {
                         uint liquidity_p1 = liquidity.div(4); // 25%  
-                        uint liquidity_p2 = liquidity.mul(7).div(20); // 35%
-                        uint liquidity_p3 = liquidity.mul(2).div(5); // 40%
+                        uint liquidity_p2 = liquidity.mul(3).div(4); // 75%
                         if (liquidity_p1 > 0) {
                             _mint(feeToPrivate, liquidity_p1);
                         }
                         if (liquidity_p2 > 0) {
                             _mint(feeTo_1, liquidity_p2);
                         }
-                        if (liquidity_p3 > 0) {
-                            _mint(feeTo_2, liquidity_p3);
-                        }
+ 
                     }
                 }
             }
