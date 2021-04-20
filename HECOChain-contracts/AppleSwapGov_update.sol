@@ -123,7 +123,7 @@ contract AppleSwapGov is IAppleSwapGov {
     uint256 private constant _MAX_FUNDS_REQUEST = 5000000; // 5000000 Apples
     uint256 private constant _FAILED_PROPOSAL_COST = 1000; //    1000 Apples
     uint256 private constant _SUBMIT_APPLES_PERCENT = 1; // 0.1%
-    uint256 private constant _VOTE_PERIOD = 3 days;
+    uint256 private constant _VOTE_PERIOD = 1 days;
     uint256 private constant _TEXT_PROPOSAL_INTERVAL = 1 days;
     uint256 private constant _MINT_PROPOSAL_LIMIT = 10000000 * (10**18) ; // mint limitation //TODO: modify amount
 
