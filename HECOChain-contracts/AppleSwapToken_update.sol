@@ -434,11 +434,11 @@ contract ERC20Mintable is StandardToken, MinterRole {
 }
 
 
-contract PeeToken is ERC20Mintable, Ownable{
+contract aptToken is ERC20Mintable, Ownable{
 
 //---------------Token Info---------------//    
-    string public constant name = "pee";
-    string public constant symbol = "pee";
+    string public constant name = "apple token";
+    string public constant symbol = "apt";
     uint8 public constant decimals = 18;
     uint256 public constant INITIAL_SUPPLY = 200000000 * 10 ** 18;
     
